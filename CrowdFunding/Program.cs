@@ -19,7 +19,7 @@ builder.Services.AddScoped<IParticiperRepository,ParticiperService>();
 builder.Services.AddTransient(sp => new SqlConnection(configuration.GetConnectionString("techno")));
 
 
-//sessions
+////sessions
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30); // Temps d'expiration de la session
