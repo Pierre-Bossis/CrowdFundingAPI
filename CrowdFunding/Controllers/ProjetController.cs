@@ -3,6 +3,7 @@ using CrowdFunding.DAL.Repositories;
 using CrowdFunding.Dtos;
 using CrowdFunding.Dtos.Donner;
 using CrowdFunding.Dtos.Mappers;
+using CrowdFunding.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,8 +25,8 @@ namespace CrowdFunding.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-           IEnumerable<ProjetDto> projets = _repo.GetAll().Select(p=>p.ToDto());
-           if(projets is not null)
+            IEnumerable<ProjetDto> projets = _repo.GetAll().Select(p => p.ToDto());
+            if (projets is not null)
                 return Ok(projets);
             return NotFound();
         }
@@ -34,7 +35,7 @@ namespace CrowdFunding.Controllers
         [Route("{id:int}")]
         public IActionResult GetById(int id)
         {
-            ProjetDto? projet =  _repo.GetById(id).ToDto();
+            ProjetDto? projet = _repo.GetById(id).ToDto();
             if (projet is not null)
                 return Ok(projet);
             return NotFound();
@@ -46,9 +47,9 @@ namespace CrowdFunding.Controllers
         {
             if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
 
-           projet.Utilisateur_Id = (int)HttpContext.Session.GetInt32("Id");
-           ProjetDto? p = _repo.Create(projet.ToEntity()).ToDto();
-            if(p is not null)
+            projet.Utilisateur_Id = (int)HttpContext.Session.GetInt32("Id");
+            ProjetDto? p = _repo.Create(projet.ToEntity()).ToDto();
+            if (p is not null)
                 //return Created();
                 return Ok(p);
             return BadRequest("Erreur lors de la création du projet.");
@@ -56,17 +57,21 @@ namespace CrowdFunding.Controllers
 
         [HttpPut]
         [Route("update/{id:int}")]
-        public IActionResult Update(ProjetUpdateDto projet)
+        public IActionResult Update(int id,ProjetUpdateDto projet)
         {
             if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
 
-            bool Success =_repo.Update(projet.ToEntityUpdate());
+            ProjetDto? p = _repo.GetById(id).ToDto();
+            if(p is not null && p.DateMiseEnLigne is not null)
+                return BadRequest("Un projet mis en ligne ne peut être modifié.");
+
+            projet.Id = id;
+            bool Success = _repo.Update(projet.ToEntityUpdate());
             if (Success)
                 return Ok("Mise à jour réussie.");
             return BadRequest();
         }
 
-        //methode don
         [HttpPost]
         [Route("{id:int}/donation")]
         public IActionResult FaireDon(int id, [FromBody] DonnerDto don)
@@ -82,6 +87,26 @@ namespace CrowdFunding.Controllers
             catch (Exception ex)
             {
                 return BadRequest("Erreur lors du don : " + ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("{id:int}/upload")]
+        public IActionResult Upload(int id)
+        {
+            if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
+
+            try
+            {
+                ProjetDto? projet = _repo.Upload(id).ToDto();
+                if (projet is not null)
+                    return Ok(projet);
+                return NotFound();
+
+            }
+            catch (MinimalContrepartieException ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using CrowdFunding.DAL.Entites;
 using CrowdFunding.DAL.Repositories;
+using CrowdFunding.Exceptions;
 using Dapper;
 using System.Data.SqlClient;
 
@@ -65,11 +66,39 @@ namespace CrowdFunding.DAL.DataAccess
         public bool Update(ProjetEntity projet)
         {
             _connection.Open();
-            string sql = "UPDATE Projet SET Nom = @nom WHERE Id = @id";
-            var parameters = new { nom = projet.Nom, id = projet.Id };
+            string sql = "UPDATE Projet SET Nom = @nom, Montant = @montant WHERE Id = @id";
+            var parameters = new { nom = projet.Nom, montant = projet.Montant, id = projet.Id };
             int rowsAffected = _connection.Execute(sql, parameters);
             _connection.Close();
             return rowsAffected > 0;
+        }
+
+        public ProjetEntity Upload(int id)
+        {
+            _connection.Open();
+
+            string sql = "SELECT COUNT(*) FROM Contrepartie WHERE Projet_Id = @id";
+            var parameters = new { id = id };
+            int count = _connection.ExecuteScalar<int>(sql, parameters);
+
+            if(count > 2)
+            {
+                string sql2 = "UPDATE Projet set DateMiseEnLigne = @datemiseenligne, DateFin = @datefin WHERE Id = @id";
+                var parameters2 = new { datemiseenligne = DateTime.Now, datefin = DateTime.Now.AddMonths(6), id = id };
+                _connection.Execute(sql2, parameters2);
+                _connection.Close();
+
+                //récupérer l'objet complet
+                string sql3 = "SELECT * FROM Projet WHERE Id = @id";
+                var parameters3 = new { id = id };
+                ProjetEntity? projet = _connection.QuerySingle<ProjetEntity>(sql3, parameters3);
+                if (projet is not null)
+                    return projet;
+                return null;
+            }
+            _connection.Close();
+            throw new MinimalContrepartieException();
+
         }
     }
 }

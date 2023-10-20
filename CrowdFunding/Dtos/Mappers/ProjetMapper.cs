@@ -53,6 +53,7 @@ namespace CrowdFunding.Dtos.Mappers
                 {
                     Id = projet.Id,
                     Nom = projet.Nom,
+                    Montant = projet.Montant
                 };
                 return p;
             }

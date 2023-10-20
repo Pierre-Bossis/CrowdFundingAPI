@@ -8,5 +8,7 @@ namespace CrowdFunding.DAL.Repositories
         ProjetEntity GetById(int id);
         IEnumerable<ProjetEntity> GetAll();
         bool Update(ProjetEntity projet);
+
+        ProjetEntity Upload(int id);
     }
 }
