@@ -57,14 +57,20 @@ namespace CrowdFunding.Controllers
 
         [HttpPut]
         [Route("update/{id:int}")]
-        public IActionResult Update(int id,ProjetUpdateDto projet)
+        public IActionResult Update(int id, ProjetUpdateDto projet)
         {
             if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
 
+            //vérifier si le projet n'est pas déjà en ligne avant d'update
             ProjetDto? p = _repo.GetById(id).ToDto();
-            if(p is not null && p.DateMiseEnLigne is not null)
+            if (p is not null && p.DateMiseEnLigne is not null)
                 return BadRequest("Un projet mis en ligne ne peut être modifié.");
 
+            //Vérifie si c'est bien le créateur du projet qui essaye de le modifier.
+            if (p.Utilisateur_Id != HttpContext.Session.GetInt32("Id"))
+                return BadRequest("Seul le créateur de ce projet peut le modifier.");
+
+            //vers l'update
             projet.Id = id;
             bool Success = _repo.Update(projet.ToEntityUpdate());
             if (Success)
@@ -95,6 +101,11 @@ namespace CrowdFunding.Controllers
         public IActionResult Upload(int id)
         {
             if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
+            //upload possible que si c'est le createur du projet qui upload
+
+            //Vérifie si c'est bien le créateur du projet qui tente de le mettre en ligne.
+            if (_repo.GetById(id).Utilisateur_Id != HttpContext.Session.GetInt32("Id"))
+                return BadRequest("Seul le créateur de ce projet peut le mettre en ligne.");
 
             try
             {

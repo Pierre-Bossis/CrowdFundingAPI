@@ -69,7 +69,7 @@ namespace CrowdFunding.Controllers
 
         [HttpPut]
         [Route("update/{id:int}")]
-        public IActionResult Update(ContrepartieDto contrepartie)
+        public IActionResult Update(int id,ContrepartieDto contrepartie)
         {
             if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
 
