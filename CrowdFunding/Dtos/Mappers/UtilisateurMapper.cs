@@ -1,4 +1,5 @@
 ﻿using CrowdFunding.DAL.Entites;
+using CrowdFunding.Dtos.Utilisateur;
 
 namespace CrowdFunding.Dtos.Mappers
 {
@@ -82,6 +83,22 @@ namespace CrowdFunding.Dtos.Mappers
                     Email = utilisateur.Email,
                     Nom= utilisateur.Nom,
                     Prenom = utilisateur.Prenom,
+                };
+                return u;
+            }
+            return null;
+        }
+
+        public static UtilisateurEntity ToEntityRegister(this RegisterDto utilisateur)
+        {
+            if(utilisateur is not null)
+            {
+                UtilisateurEntity u = new UtilisateurEntity()
+                {
+                    Nom = utilisateur.Nom,
+                    Prenom= utilisateur.Prenom,
+                    Email = utilisateur.Email,
+                    MotDePasse = utilisateur.MotDePasse
                 };
                 return u;
             }

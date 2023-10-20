@@ -1,10 +1,12 @@
 ﻿using CrowdFunding.DAL.Entites;
 using CrowdFunding.DAL.Repositories;
 using CrowdFunding.Dtos;
+using CrowdFunding.Dtos.Contrepartie;
 using CrowdFunding.Dtos.Donner;
 using CrowdFunding.Dtos.Mappers;
 using CrowdFunding.Dtos.Projet;
 using CrowdFunding.Exceptions;
+using Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,11 +18,13 @@ namespace CrowdFunding.Controllers
     {
         private readonly IProjetRepository _repo;
         private readonly IDonnerRepository _repoDonation;
+        private readonly IContrepartieRepository _repoContrepartie;
 
-        public ProjetController(IProjetRepository repo, IDonnerRepository repoDonation)
+        public ProjetController(IProjetRepository repo, IDonnerRepository repoDonation, IContrepartieRepository repoContrepartie)
         {
             _repo = repo;
             _repoDonation = repoDonation;
+            _repoContrepartie = repoContrepartie;
         }
 
         [HttpGet]
@@ -54,6 +58,32 @@ namespace CrowdFunding.Controllers
                 //return Created();
                 return Ok(p);
             return BadRequest("Erreur lors de la création du projet.");
+        }
+
+        //créer une contrepartie à un projet, cohérent qu'il soit ici
+        [HttpPost]
+        [Route("{id:int}/createcontrepartie")]
+        public IActionResult CreateContrepartie(int id,ContrepartieCreateDto contrepartie)
+        {
+            if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
+
+            try
+            {
+                if (contrepartie is not null)
+                {
+                    contrepartie.Projet_Id = id;
+                    ContrepartieDto? c = _repoContrepartie.Create(contrepartie.ToEntityCreate()).ToDto();
+                    if (c is not null)
+                        //return created();
+                        return Ok(c);
+                    return BadRequest();
+                }
+                return BadRequest();
+            }
+            catch (MontantDupliqueException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPut]

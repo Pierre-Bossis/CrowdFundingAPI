@@ -5,6 +5,7 @@ using CrowdFunding.DAL.Repositories;
 using CrowdFunding.Dtos;
 using CrowdFunding.Dtos.Donner;
 using CrowdFunding.Dtos.Mappers;
+using CrowdFunding.Dtos.Utilisateur;
 using CrowdFunding.Exceptions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -25,9 +26,9 @@ namespace CrowdFunding.Controllers
 
         [HttpPost]
         [Route("register")]
-        public IActionResult Register(UtilisateurDto utilisateur)
+        public IActionResult Register(RegisterDto utilisateur)
         {
-            UtilisateurLoggedDto? u = _repo.Register(utilisateur.ToEntity()).ToLoggedDto();
+            UtilisateurLoggedDto? u = _repo.Register(utilisateur.ToEntityRegister()).ToLoggedDto();
             //return Created();
             HttpContext.Session.SetInt32("Id", u.Id);
             HttpContext.Session.SetString("Nom", u.Nom);

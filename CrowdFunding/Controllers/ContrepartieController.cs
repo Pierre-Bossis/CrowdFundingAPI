@@ -44,30 +44,6 @@ namespace CrowdFunding.Controllers
             return BadRequest();
         }
 
-        [HttpPost]
-        [Route("create")]
-        public IActionResult Create(ContrepartieCreateDto contrepartie)
-        {
-            if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
-
-            try
-            {
-                if (contrepartie is not null)
-                {
-                    ContrepartieDto? c = _repo.Create(contrepartie.ToEntityCreate()).ToDto();
-                    if (c is not null)
-                        //return created();
-                        return Ok(c);
-                    return BadRequest();
-                }
-                return BadRequest();
-            }
-            catch (MontantDupliqueException e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
-
         [HttpPut]
         [Route("update/{id:int}")]
         public IActionResult Update(int id,ContrepartieDto contrepartie)

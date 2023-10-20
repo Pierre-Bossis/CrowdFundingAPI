@@ -36,8 +36,8 @@ namespace CrowdFunding.DAL.DataAccess
         {
             _connection.Open();
 
-            string sql = "INSERT INTO Participer VALUES (@utilisateur_id,@contrepartie_id,@date)";
-            var parameters = new { utilisateur_id = participation.Utilisateur_Id, contrepartie_id = participation.Contrepartie_Id, date = participation.Date };
+            string sql = "INSERT INTO Participer(Utilisateur_Id,Contrepartie_Id) VALUES (@utilisateur_id,@contrepartie_id)";
+            var parameters = new { utilisateur_id = participation.Utilisateur_Id, contrepartie_id = participation.Contrepartie_Id };
             _connection.Execute(sql, parameters);
 
             _connection.Close();

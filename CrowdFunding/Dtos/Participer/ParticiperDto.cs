@@ -4,6 +4,6 @@
     {
         public int Utilisateur_Id { get; set; }
         public int Contrepartie_Id { get; set; }
-        public DateTime Date { get; set; } = DateTime.Now;
+        public DateTime? Date { get; set; }
     }
 }
