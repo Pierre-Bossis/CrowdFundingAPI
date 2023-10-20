@@ -19,20 +19,18 @@ namespace CrowdFunding.DAL.DataAccess
             if (projet is not null)
             {
                 _connection.Open();
-                string sql = "INSERT INTO Projet VALUES (@nom,@montant,@datecreation,@datemiseenligne,@datefin,@utilisateur_id) SELECT SCOPE_IDENTITY();";
+                string sql = "INSERT INTO Projet(Nom,Montant,Utilisateur_Id) VALUES (@nom,@montant,@utilisateur_id) SELECT SCOPE_IDENTITY();";
                 var parameters = new
                 {
                     nom = projet.Nom,
                     montant = projet.Montant,
-                    datecreation = projet.DateCreation,
-                    datemiseenligne = (object?)projet.DateMiseEnLigne ?? DBNull.Value,
-                    datefin = (object?)projet.DateFin ?? DBNull.Value,
                     utilisateur_id = projet.Utilisateur_Id
                 };
 
-                projet.Id = _connection.ExecuteScalar<int>(sql, parameters);
+                int id = _connection.ExecuteScalar<int>(sql, parameters);
                 _connection.Close();
-                return projet;
+                ProjetEntity p = GetById(id);
+                return p;
             }
             _connection.Close();
             return null;

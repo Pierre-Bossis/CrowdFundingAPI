@@ -3,7 +3,7 @@
 	[Id] INT NOT NULL PRIMARY KEY IDENTITY,
 	[Nom] VARCHAR(50) NOT NULL,
 	[Montant] DECIMAL NOT NULL,
-	[DateCreation] DATETIME NOT NULL,
+	[DateCreation] DATETIME DEFAULT GETDATE(),
 	[DateMiseEnLigne] DATETIME,
 	[DateFin] DATETIME,
 	[Utilisateur_Id] INT NOT NULL,

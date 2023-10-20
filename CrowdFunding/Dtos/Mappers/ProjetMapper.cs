@@ -1,4 +1,5 @@
 ﻿using CrowdFunding.DAL.Entites;
+using CrowdFunding.Dtos.Projet;
 
 namespace CrowdFunding.Dtos.Mappers
 {
@@ -14,7 +15,7 @@ namespace CrowdFunding.Dtos.Mappers
                     Id = projet.Id,
                     Nom = projet.Nom,
                     Montant = projet.Montant,
-                    DateCreation = projet.DateCreation,
+                    DateCreation = projet?.DateCreation,
                     DateMiseEnLigne = projet?.DateMiseEnLigne,
                     DateFin = projet?.DateFin,
                     Utilisateur_Id = projet.Utilisateur_Id
@@ -33,7 +34,7 @@ namespace CrowdFunding.Dtos.Mappers
                     Id = projet.Id,
                     Nom = projet.Nom,
                     Montant = projet.Montant,
-                    DateCreation = projet.DateCreation,
+                    DateCreation = projet?.DateCreation,
                     DateMiseEnLigne = projet?.DateMiseEnLigne,
                     DateFin = projet?.DateFin,
                     Utilisateur_Id = projet.Utilisateur_Id
@@ -59,6 +60,25 @@ namespace CrowdFunding.Dtos.Mappers
             }
             return null;
         }
+        #endregion
+
+        #region Dto Create
+
+        public static ProjetEntity ToEntityCreate(this ProjetCreateDto projet)
+        {
+            if(projet is not null)
+            {
+                ProjetEntity p = new ProjetEntity()
+                {
+                    Nom = projet.Nom,
+                    Montant = projet.Montant,
+                    Utilisateur_Id = projet.Utilisateur_Id
+                };
+                return p;
+            }
+            return null;
+        }
+
         #endregion
     }
 }

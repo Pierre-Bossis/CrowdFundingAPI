@@ -1,5 +1,6 @@
 ﻿using CrowdFunding.DAL.Repositories;
 using CrowdFunding.Dtos;
+using CrowdFunding.Dtos.Contrepartie;
 using CrowdFunding.Dtos.Mappers;
 using CrowdFunding.Dtos.Participer;
 using Exceptions;
@@ -45,7 +46,7 @@ namespace CrowdFunding.Controllers
 
         [HttpPost]
         [Route("create")]
-        public IActionResult Create(ContrepartieDto contrepartie)
+        public IActionResult Create(ContrepartieCreateDto contrepartie)
         {
             if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
 
@@ -53,7 +54,7 @@ namespace CrowdFunding.Controllers
             {
                 if (contrepartie is not null)
                 {
-                    ContrepartieDto? c = _repo.Create(contrepartie.ToEntity()).ToDto();
+                    ContrepartieDto? c = _repo.Create(contrepartie.ToEntityCreate()).ToDto();
                     if (c is not null)
                         //return created();
                         return Ok(c);

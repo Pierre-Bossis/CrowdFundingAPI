@@ -3,6 +3,7 @@ using CrowdFunding.DAL.Repositories;
 using CrowdFunding.Dtos;
 using CrowdFunding.Dtos.Donner;
 using CrowdFunding.Dtos.Mappers;
+using CrowdFunding.Dtos.Projet;
 using CrowdFunding.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -43,12 +44,12 @@ namespace CrowdFunding.Controllers
 
         [HttpPost]
         [Route("create")]
-        public IActionResult Create(ProjetDto projet)
+        public IActionResult Create(ProjetCreateDto projet)
         {
             if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
 
             projet.Utilisateur_Id = (int)HttpContext.Session.GetInt32("Id");
-            ProjetDto? p = _repo.Create(projet.ToEntity()).ToDto();
+            ProjetDto? p = _repo.Create(projet.ToEntityCreate()).ToDto();
             if (p is not null)
                 //return Created();
                 return Ok(p);

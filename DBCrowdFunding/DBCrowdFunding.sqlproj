@@ -72,5 +72,6 @@
   <ItemGroup>
     <None Include="DBCrowdFunding.publish.xml" />
     <None Include="DBCrowdFunding_1.publish.xml" />
+    <None Include="maison.publish.xml" />
   </ItemGroup>
 </Project>
