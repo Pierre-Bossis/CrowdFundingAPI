@@ -67,6 +67,10 @@ namespace CrowdFunding.Controllers
         {
             if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
 
+            //creation contrepartie uniquement possible par le même  user que le createur du projet
+            if (_repo.GetById(id).Utilisateur_Id != HttpContext.Session.GetInt32("Id"))
+                return BadRequest("La contrepartie ne peut être faite que par le créateur du projet.");
+
             try
             {
                 if (contrepartie is not null)
