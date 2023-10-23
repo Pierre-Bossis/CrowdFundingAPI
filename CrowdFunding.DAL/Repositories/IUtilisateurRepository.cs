@@ -13,5 +13,6 @@ namespace CrowdFunding.DAL.Interfaces
         UtilisateurEntity Login(UtilisateurEntity utilisateur);
         IEnumerable<UtilisateurEntity> GetAll();
         UtilisateurEntity GetById(int id);
+        void Delete(int id);
     }
 }

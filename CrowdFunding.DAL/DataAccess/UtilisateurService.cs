@@ -20,7 +20,7 @@ namespace CrowdFunding.DAL.DataAccess
         /// Enregistrer un user
         /// </summary>
         /// <param name="utilisateur"></param>
-        /// <returns></returns>
+        /// <returns>UtilisateurEntity</returns>
         public UtilisateurEntity Register(UtilisateurEntity utilisateur)
         {
             if (IfEmailExist(utilisateur.Email)) throw new EmailDuplicateException();
@@ -39,7 +39,7 @@ namespace CrowdFunding.DAL.DataAccess
         /// <summary>
         /// Obtenir liste des users
         /// </summary>
-        /// <returns></returns>
+        /// <returns>IEnumerable<UtilisateurEntity></returns>
         public IEnumerable<UtilisateurEntity> GetAll()
         {
             _connection.Open();
@@ -59,7 +59,7 @@ namespace CrowdFunding.DAL.DataAccess
         /// Obtenir un user par son Id
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>UtilisateurEntity</returns>
         public UtilisateurEntity GetById(int id)
         {
             _connection.Open();
@@ -79,7 +79,7 @@ namespace CrowdFunding.DAL.DataAccess
         /// Se connecter au serveur
         /// </summary>
         /// <param name="utilisateur"></param>
-        /// <returns></returns>
+        /// <returns>UtilisateurEntity</returns>
         /// <exception cref="WrongsCredentialsException"></exception>
         public UtilisateurEntity Login(UtilisateurEntity utilisateur)
         {
@@ -97,10 +97,24 @@ namespace CrowdFunding.DAL.DataAccess
         }
 
         /// <summary>
+        /// Supprimer son compte
+        /// </summary>
+        /// <param name="id"></param>
+        public void Delete(int id)
+        {
+            _connection.Open();
+
+            string sql = "DELETE FROM Utilisateur WHERE Id = @id";
+            var parameters = new { id = id };
+            _connection.Execute(sql,parameters);
+            _connection.Close();
+        }
+
+        /// <summary>
         /// Hasher un mot de passe pour le register ou le login
         /// </summary>
         /// <param name="motDePasse"></param>
-        /// <returns></returns>
+        /// <returns>String</returns>
         private string HashMotDePasse(string motDePasse)
         {
             using (SHA512 sha512 = SHA512.Create())
@@ -111,7 +125,11 @@ namespace CrowdFunding.DAL.DataAccess
         }
 
 
-        //methode si adresse email est déjà utilisée
+        /// <summary>
+        /// methode si adresse email est déjà utilisée
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>Boolean</returns>
         private bool IfEmailExist(string email)
         {
             _connection.Open();

@@ -1,22 +1,20 @@
 using CrowdFunding.DAL.DataAccess;
 using CrowdFunding.DAL.Interfaces;
 using CrowdFunding.DAL.Repositories;
+using CrowdFunding.Services;
 using System.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
-IConfiguration configuration = builder.Configuration;
 // Add services to the container.
+
+
+DependencyInjectionService.ConfigureDependencyInjection(builder.Services, builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IUtilisateurRepository, UtilisateurService>();
-builder.Services.AddScoped<IProjetRepository, ProjetService>();
-builder.Services.AddScoped<IContrepartieRepository,ContrepartieService>();
-builder.Services.AddScoped<IDonnerRepository,DonnerService>();
-builder.Services.AddScoped<IParticiperRepository,ParticiperService>();
-builder.Services.AddTransient(sp => new SqlConnection(configuration.GetConnectionString("techno")));
+
 
 
 //sessions

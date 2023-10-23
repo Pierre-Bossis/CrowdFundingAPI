@@ -86,9 +86,9 @@ namespace CrowdFunding.Controllers
                     if (c is not null)
                         //return created();
                         return Ok(c);
-                    return BadRequest();
+                    return BadRequest("Problème lors de la création.");
                 }
-                return BadRequest();
+                return BadRequest("La contrepartie est nulle.");
             }
             catch (MontantDupliqueException e)
             {
@@ -118,7 +118,7 @@ namespace CrowdFunding.Controllers
                 bool Success = _repo.Update(projet.ToEntityUpdate());
                 if (Success)
                     return Ok("Mise à jour réussie.");
-                return BadRequest();
+                return BadRequest("Mise à jour échouée.");
             }
             catch (ProjetNameDuplicateException ex)
             {

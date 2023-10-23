@@ -59,7 +59,7 @@ namespace CrowdFunding.Controllers
                     HttpContext.Session.SetString("Email", u.Email);
                     return Ok(u);
                 }
-                return BadRequest();
+                return BadRequest("Erreur lors de la connexion.");
             }
             catch (WrongsCredentialsException e)
             {
@@ -70,7 +70,8 @@ namespace CrowdFunding.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            IEnumerable<UtilisateurDto>? utilisateurs =  _repo.GetAll().Select(u=>u.ToDto());
+            //renvoie un des dto complet sans le mot de passe
+            IEnumerable<UtilisateurLoggedDto>? utilisateurs =  _repo.GetAll().Select(u=>u.ToLoggedDto());
 
             if(utilisateurs is not null)
                 return Ok(utilisateurs);
@@ -85,6 +86,17 @@ namespace CrowdFunding.Controllers
             if(utilisateur is not null)
                 return Ok(utilisateur);
             return NotFound();
+        }
+
+        [HttpDelete]
+        [Route("delete")]
+        public IActionResult Delete()
+        {
+            if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
+
+            _repo.Delete((int)HttpContext.Session.GetInt32("Id"));
+            HttpContext.Session.Clear();
+            return Ok("Compte supprimé.");
         }
     }
 }
