@@ -15,7 +15,7 @@ namespace CrowdFunding.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class ProjetController : ControllerBase
-    {
+    {//create et upload, nameprojetexception
         private readonly IProjetRepository _repo;
         private readonly IDonnerRepository _repoDonation;
         private readonly IContrepartieRepository _repoContrepartie;
@@ -51,13 +51,19 @@ namespace CrowdFunding.Controllers
         public IActionResult Create(ProjetCreateDto projet)
         {
             if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
-
-            projet.Utilisateur_Id = (int)HttpContext.Session.GetInt32("Id");
-            ProjetDto? p = _repo.Create(projet.ToEntityCreate()).ToDto();
-            if (p is not null)
-                //return Created();
-                return Ok(p);
-            return BadRequest("Erreur lors de la création du projet.");
+            try
+            {
+                projet.Utilisateur_Id = (int)HttpContext.Session.GetInt32("Id");
+                ProjetDto? p = _repo.Create(projet.ToEntityCreate()).ToDto();
+                if (p is not null)
+                    //return Created();
+                    return Ok(p);
+                return BadRequest("Erreur lors de la création du projet.");
+            }
+            catch (ProjetNameDuplicateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         //créer une contrepartie à un projet, cohérent qu'il soit ici
@@ -96,21 +102,28 @@ namespace CrowdFunding.Controllers
         {
             if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
 
-            //vérifier si le projet n'est pas déjà en ligne avant d'update
-            ProjetDto? p = _repo.GetById(id).ToDto();
-            if (p is not null && p.DateMiseEnLigne is not null)
-                return BadRequest("Un projet mis en ligne ne peut être modifié.");
+            try
+            {
+                //vérifier si le projet n'est pas déjà en ligne avant d'update
+                ProjetDto? p = _repo.GetById(id).ToDto();
+                if (p is not null && p.DateMiseEnLigne is not null)
+                    return BadRequest("Un projet mis en ligne ne peut être modifié.");
 
-            //Vérifie si c'est bien le créateur du projet qui essaye de le modifier.
-            if (p.Utilisateur_Id != HttpContext.Session.GetInt32("Id"))
-                return BadRequest("Seul le créateur de ce projet peut le modifier.");
+                //Vérifie si c'est bien le créateur du projet qui essaye de le modifier.
+                if (p.Utilisateur_Id != HttpContext.Session.GetInt32("Id"))
+                    return BadRequest("Seul le créateur de ce projet peut le modifier.");
 
-            //vers l'update
-            projet.Id = id;
-            bool Success = _repo.Update(projet.ToEntityUpdate());
-            if (Success)
-                return Ok("Mise à jour réussie.");
-            return BadRequest();
+                //vers l'update
+                projet.Id = id;
+                bool Success = _repo.Update(projet.ToEntityUpdate());
+                if (Success)
+                    return Ok("Mise à jour réussie.");
+                return BadRequest();
+            }
+            catch (ProjetNameDuplicateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]

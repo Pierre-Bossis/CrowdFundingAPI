@@ -28,13 +28,20 @@ namespace CrowdFunding.Controllers
         [Route("register")]
         public IActionResult Register(RegisterDto utilisateur)
         {
-            UtilisateurLoggedDto? u = _repo.Register(utilisateur.ToEntityRegister()).ToLoggedDto();
-            //return Created();
-            HttpContext.Session.SetInt32("Id", u.Id);
-            HttpContext.Session.SetString("Nom", u.Nom);
-            HttpContext.Session.SetString("Prenom", u.Prenom);
-            HttpContext.Session.SetString("Email", u.Email);
-            return Ok(u);
+            try
+            {
+                UtilisateurLoggedDto? u = _repo.Register(utilisateur.ToEntityRegister()).ToLoggedDto();
+                //return Created();
+                HttpContext.Session.SetInt32("Id", u.Id);
+                HttpContext.Session.SetString("Nom", u.Nom);
+                HttpContext.Session.SetString("Prenom", u.Prenom);
+                HttpContext.Session.SetString("Email", u.Email);
+                return Ok(u);
+            }
+            catch (EmailDuplicateException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
