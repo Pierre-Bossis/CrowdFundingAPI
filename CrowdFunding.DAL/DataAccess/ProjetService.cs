@@ -108,10 +108,9 @@ namespace CrowdFunding.DAL.DataAccess
         {
             _connection.Open();
 
-            string sql = "SELECT COUNT(*) FROM Utilisateur WHERE Nom = @nom";
+            string sql = "SELECT COUNT(*) FROM Projet WHERE Nom = @nom";
             var parameters = new { nom = name };
-            //if res plus grand que 0 return false
-            int count = _connection.Execute(sql, parameters);
+            int count = _connection.ExecuteScalar<int>(sql, parameters);
             _connection.Close();
             if (count > 0) return true;
             return false;

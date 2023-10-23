@@ -119,7 +119,7 @@ namespace CrowdFunding.DAL.DataAccess
             string sql = "SELECT COUNT(*) FROM Utilisateur WHERE Email = @email";
             var parameters = new { email = email };
             //if res plus grand que 0 return false
-            int count = _connection.Execute(sql, parameters);
+            int count = _connection.ExecuteScalar<int>(sql, parameters);
             _connection.Close();
             if (count > 0) return true;
             return false;
