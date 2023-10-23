@@ -16,7 +16,7 @@ builder.Services.AddScoped<IProjetRepository, ProjetService>();
 builder.Services.AddScoped<IContrepartieRepository,ContrepartieService>();
 builder.Services.AddScoped<IDonnerRepository,DonnerService>();
 builder.Services.AddScoped<IParticiperRepository,ParticiperService>();
-builder.Services.AddTransient(sp => new SqlConnection(configuration.GetConnectionString("default")));
+builder.Services.AddTransient(sp => new SqlConnection(configuration.GetConnectionString("techno")));
 
 
 //sessions

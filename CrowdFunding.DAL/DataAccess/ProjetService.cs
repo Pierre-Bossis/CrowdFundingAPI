@@ -18,6 +18,8 @@ namespace CrowdFunding.DAL.DataAccess
         {
             if (projet is not null)
             {
+                if (IfProjetNameExist(projet.Nom)) throw new ProjetNameDuplicateException();
+
                 _connection.Open();
                 string sql = "INSERT INTO Projet(Nom,Montant,Utilisateur_Id) VALUES (@nom,@montant,@utilisateur_id) SELECT SCOPE_IDENTITY();";
                 var parameters = new
@@ -63,6 +65,8 @@ namespace CrowdFunding.DAL.DataAccess
 
         public bool Update(ProjetEntity projet)
         {
+            if (IfProjetNameExist(projet.Nom)) throw new ProjetNameDuplicateException();
+
             _connection.Open();
             string sql = "UPDATE Projet SET Nom = @nom, Montant = @montant WHERE Id = @id";
             var parameters = new { nom = projet.Nom, montant = projet.Montant, id = projet.Id };
@@ -97,6 +101,20 @@ namespace CrowdFunding.DAL.DataAccess
             _connection.Close();
             throw new MinimalContrepartieException();
 
+        }
+
+        //methode si le nom du projet est déjà utilisée
+        private bool IfProjetNameExist(string name)
+        {
+            _connection.Open();
+
+            string sql = "SELECT COUNT(*) FROM Utilisateur WHERE Nom = @nom";
+            var parameters = new { nom = name };
+            //if res plus grand que 0 return false
+            int count = _connection.Execute(sql, parameters);
+            _connection.Close();
+            if (count > 0) return true;
+            return false;
         }
     }
 }

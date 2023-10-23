@@ -23,6 +23,8 @@ namespace CrowdFunding.DAL.DataAccess
         /// <returns></returns>
         public UtilisateurEntity Register(UtilisateurEntity utilisateur)
         {
+            if (IfEmailExist(utilisateur.Email)) throw new EmailDuplicateException();
+
             _connection.Open();
 
             utilisateur.MotDePasse = HashMotDePasse(utilisateur.MotDePasse);
@@ -63,8 +65,8 @@ namespace CrowdFunding.DAL.DataAccess
             _connection.Open();
             string sql = "select * from Utilisateur where Id = @monId";
             var parameters = new { monId = id };
-            UtilisateurEntity? utilisateur = _connection.QuerySingleOrDefault<UtilisateurEntity>(sql,parameters);
-            if(utilisateur is not null)
+            UtilisateurEntity? utilisateur = _connection.QuerySingleOrDefault<UtilisateurEntity>(sql, parameters);
+            if (utilisateur is not null)
             {
                 _connection.Close();
                 return utilisateur;
@@ -89,7 +91,7 @@ namespace CrowdFunding.DAL.DataAccess
             UtilisateurEntity? u = _connection.QuerySingleOrDefault<UtilisateurEntity>(sql, parameters);
             _connection.Close();
 
-            if(u != null && PasswordHash == u.MotDePasse)
+            if (u != null && PasswordHash == u.MotDePasse)
                 return u;
             throw new WrongsCredentialsException();
         }
@@ -106,6 +108,21 @@ namespace CrowdFunding.DAL.DataAccess
                 byte[] hashBytes = sha512.ComputeHash(Encoding.UTF8.GetBytes(motDePasse));
                 return Convert.ToBase64String(hashBytes);
             }
+        }
+
+
+        //methode si adresse email est déjà utilisée
+        private bool IfEmailExist(string email)
+        {
+            _connection.Open();
+
+            string sql = "SELECT COUNT(*) FROM Utilisateur WHERE Email = @email";
+            var parameters = new { email = email };
+            //if res plus grand que 0 return false
+            int count = _connection.Execute(sql, parameters);
+            _connection.Close();
+            if (count > 0) return true;
+            return false;
         }
 
 
