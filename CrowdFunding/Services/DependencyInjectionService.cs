@@ -9,7 +9,7 @@ namespace CrowdFunding.Services
     {
         public static void ConfigureDependencyInjection(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient(sp => new SqlConnection(configuration.GetConnectionString("techno")));
+            services.AddTransient(sp => new SqlConnection(configuration.GetConnectionString("default")));
             services.AddScoped<IUtilisateurRepository, UtilisateurService>();
             services.AddScoped<IProjetRepository, ProjetService>();
             services.AddScoped<IContrepartieRepository, ContrepartieService>();

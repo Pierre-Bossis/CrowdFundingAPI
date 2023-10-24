@@ -7,11 +7,11 @@ using System.Data.SqlClient;
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
-
+//Service lié aux injections de dépendances
 DependencyInjectionService.ConfigureDependencyInjection(builder.Services, builder.Configuration);
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -35,7 +35,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
 app.UseAuthorization();
 app.UseSession();
 
