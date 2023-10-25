@@ -96,6 +96,17 @@ namespace CrowdFunding.Controllers
             }
         }
 
+        //récupérer toutes les contreparties liées au projet
+        [HttpGet]
+        [Route("{id:int}/getcontrepartie")]
+        public IActionResult GetContrepartie(int id)
+        {
+            IEnumerable<ContrepartieDto> contreparties = _repoContrepartie.GetAllForProjet(id).Select(c => c.ToDto());
+            if (contreparties is not null)
+                return Ok(contreparties);
+            return NotFound();
+        }
+
         [HttpPut]
         [Route("update/{id:int}")]
         public IActionResult Update(int id, ProjetUpdateDto projet)
@@ -149,7 +160,6 @@ namespace CrowdFunding.Controllers
         public IActionResult Upload(int id)
         {
             if (HttpContext.Session.GetInt32("Id") is null) return BadRequest("Vous devez être connecté.");
-            //upload possible que si c'est le createur du projet qui upload
 
             //Vérifie si c'est bien le créateur du projet qui tente de le mettre en ligne.
             if (_repo.GetById(id).Utilisateur_Id != HttpContext.Session.GetInt32("Id"))

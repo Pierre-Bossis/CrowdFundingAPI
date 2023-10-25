@@ -21,14 +21,14 @@ namespace CrowdFunding.Controllers
             _repoParticiper = repoParticiper;
         }
 
-        [HttpGet]
-        public IActionResult Get()
-        {
-            IEnumerable<ContrepartieDto> contreparties = _repo.GetAll().Select(c => c.ToDto());
-            if (contreparties is not null)
-                return Ok(contreparties);
-            return NotFound();
-        }
+        //[HttpGet]
+        //public IActionResult Get()
+        //{
+        //    IEnumerable<ContrepartieDto> contreparties = _repo.GetAll().Select(c => c.ToDto());
+        //    if (contreparties is not null)
+        //        return Ok(contreparties);
+        //    return NotFound();
+        //}
 
         [HttpGet]
         [Route("{id:int}")]

@@ -12,6 +12,7 @@ namespace CrowdFunding.DAL.Repositories
         ContrepartieEntity Create(ContrepartieEntity contrepartie);
         ContrepartieEntity GetById(int id);
         IEnumerable<ContrepartieEntity> GetAll();
+        IEnumerable<ContrepartieEntity> GetAllForProjet(int id);
         bool Update(ContrepartieEntity contrepartie);
     }
 }

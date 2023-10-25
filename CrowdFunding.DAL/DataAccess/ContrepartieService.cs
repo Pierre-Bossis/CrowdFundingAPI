@@ -58,6 +58,19 @@ namespace CrowdFunding.DAL.DataAccess
             return null;
         }
 
+        public IEnumerable<ContrepartieEntity> GetAllForProjet(int id)
+        {
+            _connection.Open();
+
+            string sql = "SELECT * FROM Contrepartie WHERE Projet_Id = @projet_id";
+            var parameters = new { projet_id = id };
+            IEnumerable<ContrepartieEntity>? contreparties = _connection.Query<ContrepartieEntity>(sql, parameters);
+            _connection.Close();
+            if(contreparties is not null)
+                return contreparties;
+            return null;
+        }
+
         public ContrepartieEntity GetById(int id)
         {
             if (id != 0)
